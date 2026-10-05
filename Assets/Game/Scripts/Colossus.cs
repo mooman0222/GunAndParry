@@ -35,6 +35,9 @@ namespace GunAndParry
         // ArmorMax tuned so a fully parried barrage alone can't break it: a break takes several parried attacks (~25s of good play).
         public const float ArmorMax = 250f, ArmoredMult = 0.1f, BrokenMult = 2.5f, BreakDuration = 6.5f;
         const float SlamRadius = 3.2f, SweepLength = 17f, SweepWidth = 0.7f;
+        const float SmashDuration = 0.12f, RecoverDuration = 0.7f;
+        /// <summary>Hammer reaches the bottom (-150 -> 0 of the -150 -> +55 smash) this far into SlamRecover.</summary>
+        const float SmashImpactAt = SmashDuration * 150f / 205f;
 
         enum Mode { Walk, Barrage, SlamWindup, SlamRecover, SweepAim, Sweep, GoldVolley, Summon, Broken }
 
@@ -43,10 +46,13 @@ namespace GunAndParry
         public override float Armor01 => armor / ArmorMax;
         public override bool Broken => mode == Mode.Broken;
         /// <summary>Seconds until the current hammer slam lands (or -1). Used by the dev autopilot.</summary>
-        public float SlamImpactIn => mode == Mode.SlamWindup ? Mathf.Max(0, windup - modeTime) : -1f;
+        public float SlamImpactIn => mode == Mode.SlamWindup ? Mathf.Max(0, windup - modeTime) + SmashImpactAt
+            : mode == Mode.SlamRecover && !slamImpactDone ? Mathf.Max(0, SmashImpactAt - modeTime) : -1f;
         public Vector3 SlamTarget { get; private set; }
 
         float armor = ArmorMax, lastArmorHit, modeTime, shotTimer, sweepAngle, sweepFrom, windup;
+        bool slamImpactDone;
+        float recoverExtra;
         int step, volleys, slamArm, slamsLeft;
         Mode mode = Mode.Walk;
         float attackDelay = 2.5f;
@@ -143,7 +149,7 @@ namespace GunAndParry
             g.Player.RegisterParry(0, 1, perfect ? 1 : 0, 1);
             DamageArmor(perfect ? 70f : 50f);
             g.Fx.Ring(SlamTarget, ProjectileManager.PerfectColor, 1f, SlamRadius * 2.4f, 0.35f);
-            if (mode != Mode.Broken) { mode = Mode.SlamRecover; modeTime = -0.6f; } // staggered: longer recovery
+            if (mode != Mode.Broken) recoverExtra = 0.7f; // staggered: longer recovery, arm resting low
         }
 
         // ---------------- Behaviour ----------------
@@ -190,23 +196,21 @@ namespace GunAndParry
                 case Mode.SlamWindup:
                     if (modeTime >= windup)
                     {
-                        // Impact. A parry whose window covers this instant counters it.
-                        var g = Game.I;
-                        var d = player.Pos - SlamTarget; d.y = 0;
-                        bool inArea = d.magnitude <= SlamRadius + Player.Radius;
-                        if (inArea && player.IsParrying) CounterSlam(player.ParryAge <= 0.12f);
-                        else if (inArea) player.TryHit(e.Damage * 1.6f);
-                        g.Fx.Explosion(SlamTarget, Orange, 2.2f);
-                        g.Fx.Ring(SlamTarget, Orange, 0.5f, SlamRadius * 2.2f, 0.3f);
-                        g.Rig.Shake(0.6f);
-                        Sfx.Play(SfxId.Slam, 0.9f);
-                        if (phase >= 2 && mode == Mode.SlamWindup) Ring(12, 5.5f, true, false, SlamTarget);
-                        if (mode == Mode.SlamWindup) { mode = Mode.SlamRecover; modeTime = 0; }
+                        // The hammer is still overhead here: the smash animates in SlamRecover
+                        // and the impact lands when it reaches the bottom (see SmashImpactAt).
+                        mode = Mode.SlamRecover;
+                        modeTime = 0;
+                        slamImpactDone = false;
                     }
                     return Vector3.zero;
 
                 case Mode.SlamRecover:
-                    if (modeTime >= 0.7f)
+                    if (!slamImpactDone && modeTime >= SmashImpactAt)
+                    {
+                        slamImpactDone = true;
+                        SlamImpact(player, phase);
+                    }
+                    if (modeTime >= RecoverDuration + recoverExtra)
                     {
                         if (slamsLeft > 0) StartSlam(phase, player);
                         else EndAttack();
@@ -290,15 +294,33 @@ namespace GunAndParry
             }
         }
 
+        /// <summary>Hammer reaches the bottom of its swing: shockwave, damage, and the parry counter window.</summary>
+        void SlamImpact(Player player, int phase)
+        {
+            // Impact. A parry whose window covers this instant counters it.
+            var g = Game.I;
+            var d = player.Pos - SlamTarget; d.y = 0;
+            bool inArea = d.magnitude <= SlamRadius + Player.Radius;
+            if (inArea && player.IsParrying) CounterSlam(player.ParryAge <= 0.12f);
+            else if (inArea) player.TryHit(e.Damage * 1.6f);
+            g.Fx.Explosion(SlamTarget, Orange, 2.2f);
+            g.Fx.Ring(SlamTarget, Orange, 0.5f, SlamRadius * 2.2f, 0.3f);
+            g.Rig.Shake(0.6f);
+            Sfx.Play(SfxId.Slam, 0.9f);
+            if (phase >= 2 && mode != Mode.Broken) Ring(12, 5.5f, true, false, SlamTarget);
+        }
+
         void StartSlam(int phase, Player player)
         {
             if (mode == Mode.SlamRecover) slamsLeft--;
             mode = Mode.SlamWindup;
             modeTime = 0;
+            recoverExtra = 0;
+            slamImpactDone = false;
             windup = phase == 3 ? 0.8f : 1.0f;
             slamArm = 1 - slamArm;
             SlamTarget = new Vector3(player.Pos.x, 0, player.Pos.z);
-            Game.I.Fx.Telegraph(SlamTarget, SlamRadius, windup);
+            Game.I.Fx.Telegraph(SlamTarget, SlamRadius, windup + SmashImpactAt);
             Sfx.Play(SfxId.Windup, 0.7f, 0.7f);
         }
 
@@ -340,13 +362,27 @@ namespace GunAndParry
         {
             float k = 1f - Mathf.Exp(-10f * dt);
             // Arms: raise during wind-up, smash on impact, settle.
+            // The smash is explicitly animated (-150 overhead through 0 straight-down to +55 follow-through):
+            // snapping or Slerp-smoothing the -150 -> +55 jump would teleport (or swing the wrong way around).
+            // The impact itself lands at SmashImpactAt, when the hammer reaches the bottom (see SlamImpact).
             float raise = 0f, other = 0f;
+            bool smashing = false;
             if (mode == Mode.SlamWindup) raise = Mathf.SmoothStep(0, -150f, Mathf.Clamp01(modeTime / windup));
-            else if (mode == Mode.SlamRecover) raise = Mathf.Lerp(55f, 0f, Mathf.Clamp01((modeTime + 0.0f) / 0.7f));
+            else if (mode == Mode.SlamRecover)
+            {
+                if (modeTime < SmashDuration)
+                {
+                    raise = Mathf.Lerp(-150f, 55f, Mathf.Clamp01(modeTime / SmashDuration));
+                    smashing = true;
+                }
+                else raise = Mathf.Lerp(55f, 0f, Mathf.Clamp01((modeTime - SmashDuration) / (RecoverDuration - SmashDuration)));
+            }
             if (mode == Mode.Barrage || mode == Mode.GoldVolley) other = -40f;
             var slam = slamArm == 0 ? armL : armR;
             var idle = slamArm == 0 ? armR : armL;
-            slam.localRotation = Quaternion.Slerp(slam.localRotation, Quaternion.Euler(raise + Mathf.Sin(now * 1.3f) * 3f, 0, 0), mode == Mode.SlamRecover && modeTime < 0.1f ? 1f : k);
+            var sway = Mathf.Sin(now * 1.3f) * 3f;
+            if (smashing) slam.localRotation = Quaternion.Euler(raise + sway, 0, 0);
+            else slam.localRotation = Quaternion.Slerp(slam.localRotation, Quaternion.Euler(raise + sway, 0, 0), k);
             idle.localRotation = Quaternion.Slerp(idle.localRotation, Quaternion.Euler(other + Mathf.Sin(now * 1.3f + 1f) * 3f, 0, 0), k);
 
             // Broken: kneel and tilt; otherwise hover and breathe.
