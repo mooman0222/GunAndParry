@@ -112,16 +112,16 @@ namespace GunAndParry
             p.Hit.Clear();
             var (mesh, scale, trailTime, trailWidth, intensity) = style switch
             {
-                ShotStyle.Bullet => (Art.Diamond, new Vector3(0.3f, 0.3f, 0.75f), 0.08f, 0.2f, 2.5f),
-                ShotStyle.Pellet => (Art.Sphere, Vector3.one * 0.2f, 0.06f, 0.15f, 2.5f),
-                ShotStyle.Drone => (Art.Diamond, new Vector3(0.22f, 0.22f, 0.5f), 0.06f, 0.12f, 2.5f),
-                ShotStyle.Missile => (Art.Diamond, new Vector3(0.3f, 0.3f, 0.6f), 0.3f, 0.25f, 2.2f),
-                ShotStyle.Reflected => (Art.Sphere, Vector3.one * 0.45f, 0.18f, 0.4f, 5f),
-                ShotStyle.Perfect => (Art.Octa, Vector3.one * 0.6f, 0.25f, 0.5f, 3.2f),
-                ShotStyle.Counter => (Art.Octa, new Vector3(0.5f, 0.5f, 0.9f), 0.2f, 0.45f, 2.8f),
+                ShotStyle.Bullet => (Art.Diamond, new Vector3(0.3f, 0.3f, 0.75f), 0.08f, 0.2f, 2f),
+                ShotStyle.Pellet => (Art.Sphere, Vector3.one * 0.2f, 0.06f, 0.15f, 2f),
+                ShotStyle.Drone => (Art.Diamond, new Vector3(0.22f, 0.22f, 0.5f), 0.06f, 0.12f, 2f),
+                ShotStyle.Missile => (Art.Diamond, new Vector3(0.3f, 0.3f, 0.6f), 0.3f, 0.25f, 1.8f),
+                ShotStyle.Reflected => (Art.Sphere, Vector3.one * 0.45f, 0.18f, 0.4f, 3f),
+                ShotStyle.Perfect => (Art.Octa, Vector3.one * 0.6f, 0.25f, 0.5f, 2.4f),
+                ShotStyle.Counter => (Art.Octa, new Vector3(0.5f, 0.5f, 0.9f), 0.2f, 0.45f, 2.2f),
                 ShotStyle.EnemyOrb => (Art.Sphere, Vector3.one * 0.5f, 0f, 0f, 1.6f),
-                ShotStyle.EnemyGold => (Art.Octa, Vector3.one * 0.75f, 0f, 0f, 2.2f),
-                _ => (Art.Octa, Vector3.one * 0.7f, 0f, 0f, 2f),
+                ShotStyle.EnemyGold => (Art.Octa, Vector3.one * 0.75f, 0f, 0f, 1.8f),
+                _ => (Art.Octa, Vector3.one * 0.7f, 0f, 0f, 1.6f),
             };
             p.Filter.sharedMesh = mesh;
             p.Renderer.sharedMaterial = Art.Unlit(Art.Hdr(color, intensity));
@@ -129,7 +129,7 @@ namespace GunAndParry
             p.Trail.enabled = trailTime > 0;
             p.Trail.time = trailTime;
             p.Trail.widthMultiplier = trailWidth;
-            var c = Art.Hdr(color, 2f);
+            var c = Art.Hdr(color, 1.5f);
             p.Trail.startColor = c;
             c.a = 0;
             p.Trail.endColor = c;
@@ -225,12 +225,12 @@ namespace GunAndParry
                 p.Style = isPerfect ? ShotStyle.Perfect : ShotStyle.Reflected;
                 p.Color = color;
                 p.Filter.sharedMesh = isPerfect ? Art.Octa : Art.Sphere;
-                p.Renderer.sharedMaterial = Art.Unlit(Art.Hdr(color, isPerfect ? 3.2f : 5f));
+                p.Renderer.sharedMaterial = Art.Unlit(Art.Hdr(color, isPerfect ? 2.4f : 3f));
                 p.T.localScale = Vector3.one * (isPerfect ? 0.6f : 0.45f);
                 p.Trail.enabled = true;
                 p.Trail.time = isPerfect ? 0.25f : 0.18f;
                 p.Trail.widthMultiplier = isPerfect ? 0.5f : 0.4f;
-                p.Trail.startColor = Art.Hdr(color, 2f);
+                p.Trail.startColor = Art.Hdr(color, 1.5f);
                 p.Trail.endColor = new Color(color.r, color.g, color.b, 0);
                 p.Trail.Clear();
                 Game.I.Fx.Sparks(p.Pos, color, isPerfect ? 16 : 8, 10f);

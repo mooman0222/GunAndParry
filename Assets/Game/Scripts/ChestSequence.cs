@@ -102,12 +102,12 @@ namespace GunAndParry
 
         void AddShard()
         {
-            var go = Art.Part("Shard", root, Art.Gem, Art.Unlit(Art.Hdr(color, 2.2f)), origin + Vector3.up, Vector3.one * 1.6f, false);
+            var go = Art.Part("Shard", root, Art.Gem, Art.Unlit(Art.Hdr(color, 1.8f)), origin + Vector3.up, Vector3.one * 1.6f, false);
             var tr = go.AddComponent<TrailRenderer>();
             tr.sharedMaterial = Art.Trail;
             tr.time = 0.4f;
             tr.widthMultiplier = 0.45f;
-            tr.startColor = Art.Hdr(color, 1.6f);
+            tr.startColor = Art.Hdr(color, 1.4f);
             tr.endColor = new Color(color.r, color.g, color.b, 0f);
             tr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             shards.Add(new Shard { T = go.transform, Trail = tr });

@@ -107,7 +107,7 @@ namespace GunAndParry
 
         public void Sparks(Vector3 pos, Color color, int count = 6, float speed = 9f)
         {
-            var ep = new ParticleSystem.EmitParams { position = pos, applyShapeToPosition = true, startColor = Art.Hdr(color, 2.5f) };
+            var ep = new ParticleSystem.EmitParams { position = pos, applyShapeToPosition = true, startColor = Art.Hdr(color, 2f) };
             for (int i = 0; i < count; i++)
             {
                 ep.velocity = Flat(Random.onUnitSphere) * (speed * Random.Range(0.5f, 1f));
@@ -118,7 +118,7 @@ namespace GunAndParry
 
         public void Explosion(Vector3 pos, Color color, float size = 1f)
         {
-            Emit(glow, pos, Art.Hdr(color, 2f), Mathf.RoundToInt(8 * size), 4f * size, 0.9f * size);
+            Emit(glow, pos, Art.Hdr(color, 1.6f), Mathf.RoundToInt(8 * size), 4f * size, 0.9f * size);
             Sparks(pos, color, Mathf.RoundToInt(14 * size), 12f * size);
             var ep = new ParticleSystem.EmitParams { position = pos + Vector3.up * 0.3f, applyShapeToPosition = true, startColor = Art.Hdr(color, 1.6f) };
             int n = Mathf.RoundToInt(5 * size);
@@ -133,7 +133,7 @@ namespace GunAndParry
 
         public void Glow(Vector3 pos, Color color, float size, int count = 1)
         {
-            Emit(glow, pos, Art.Hdr(color, 2f), count, 1f, size);
+            Emit(glow, pos, Art.Hdr(color, 1.6f), count, 1f, size);
         }
 
         /// <summary>Expanding flat ring on the ground (parry, shockwave).</summary>
@@ -198,7 +198,7 @@ namespace GunAndParry
             b.L.gameObject.SetActive(true);
             b.L.positionCount = count;
             for (int i = 0; i < count; i++) b.L.SetPosition(i, points[i]);
-            b.Start = Time.time; b.Duration = duration; b.Width = width; b.Color = Art.Hdr(color, 3f);
+            b.Start = Time.time; b.Duration = duration; b.Width = width; b.Color = Art.Hdr(color, 2.2f);
             UpdateBeam(b, 0);
             beams.Add(b);
         }

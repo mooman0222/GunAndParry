@@ -114,7 +114,7 @@ namespace GunAndParry
             float r = def.Radius;
             // Body keeps the type colour (elites glow brighter); gold is reserved for the elite's trim so types stay recognisable.
             var body = Art.Lit(def.Color * 0.3f, Art.Hdr(def.Color, elite ? 1.0f : 0.75f));
-            var hot = Art.Unlit(Art.Hdr(elite ? Gold : Color.white, 2f));
+            var hot = Art.Unlit(Art.Hdr(elite ? Gold : Color.white, 1.4f));
             Transform spinner = null;
 
             switch (def.Shape)
@@ -321,7 +321,7 @@ namespace GunAndParry
             }
         }
 
-        static Material WarningMaterial => warningMat ??= Art.Unlit(Art.Hdr(Warning, 2.6f));
+        static Material WarningMaterial => warningMat ??= Art.Unlit(Art.Hdr(Warning, 1.8f));
 
         static void SetMaterials(Enemy e, Material m)
         {

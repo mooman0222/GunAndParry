@@ -78,8 +78,8 @@ namespace GunAndParry.EditorTools
             AssetDatabase.CreateAsset(profile, path);
 
             var bloom = Add<Bloom>(profile);
-            bloom.threshold.Override(0.95f);
-            bloom.intensity.Override(1.3f);
+            bloom.threshold.Override(1.1f);
+            bloom.intensity.Override(0.7f);
             bloom.scatter.Override(0.72f);
             bloom.highQualityFiltering.Override(true);
 

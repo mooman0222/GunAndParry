@@ -57,7 +57,7 @@ namespace GunAndParry
                 new[] { 0, 2, 4, 0, 4, 3, 0, 3, 5, 0, 5, 2, 1, 4, 2, 1, 3, 4, 1, 5, 3, 1, 2, 5 });
 
             Flash = new Material(unlitTemplate) { name = "Flash" };
-            Flash.SetColor("_BaseColor", new Color(3f, 3f, 3f, 1f));
+            Flash.SetColor("_BaseColor", new Color(2f, 2f, 2f, 1f));
 
             Particle = new Material(particleTemplate) { name = "Particle" };
             Particle.SetTexture("_BaseMap", Glow);

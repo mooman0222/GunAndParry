@@ -144,7 +144,7 @@ namespace GunAndParry
                 var go = new GameObject("Drone");
                 go.transform.SetParent(Game.I.WorldRoot, false);
                 Art.Part("Body", go.transform, Art.Octa, Art.Lit(new Color(0.1f, 0.2f, 0.1f), Art.Hdr(Def.Color, 1.5f)), Vector3.zero, Vector3.one * 0.45f, false);
-                Art.Part("Eye", go.transform, Art.Sphere, Art.Unlit(Art.Hdr(Def.Color, 4f)), new Vector3(0, 0, 0.2f), Vector3.one * 0.15f, false);
+                Art.Part("Eye", go.transform, Art.Sphere, Art.Unlit(Art.Hdr(Def.Color, 2.6f)), new Vector3(0, 0, 0.2f), Vector3.one * 0.15f, false);
                 drones.Add(go.transform);
                 timers.Add(Random.value * 0.5f);
                 guard.Add(0f);

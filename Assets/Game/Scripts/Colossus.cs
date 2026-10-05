@@ -329,7 +329,7 @@ namespace GunAndParry
             laser.SetPosition(1, b);
             laser.startWidth = width * 0.6f;
             laser.endWidth = width;
-            var c = Art.Hdr(color, 3f);
+            var c = Art.Hdr(color, 2.2f);
             laser.startColor = laser.endColor = c;
             return (new Vector3(e.Pos.x, 0, e.Pos.z), b);
         }
@@ -359,9 +359,9 @@ namespace GunAndParry
             head.localRotation = Quaternion.Slerp(head.localRotation, look, k);
 
             float pulse = 0.8f + Mathf.Sin(now * (mode == Mode.Broken ? 12f : 3f)) * 0.2f;
-            coreMat.SetColor("_BaseColor", Art.Hdr(mode == Mode.Broken ? ProjectileManager.PerfectColor : Orange, (mode == Mode.Broken ? 4f : 1.2f) * pulse));
+            coreMat.SetColor("_BaseColor", Art.Hdr(mode == Mode.Broken ? ProjectileManager.PerfectColor : Orange, (mode == Mode.Broken ? 2.8f : 1.2f) * pulse));
             bool charging = mode == Mode.SweepAim || mode == Mode.Sweep;
-            eyeMat.SetColor("_BaseColor", Art.Hdr(charging ? new Color(1f, 0.2f, 0.15f) : Orange, charging ? 4f : 2.5f));
+            eyeMat.SetColor("_BaseColor", Art.Hdr(charging ? new Color(1f, 0.2f, 0.15f) : Orange, charging ? 3f : 2f));
         }
 
         // ---------------- Model ----------------
@@ -374,7 +374,7 @@ namespace GunAndParry
             var dark = Art.Lit(new Color(0.26f, 0.26f, 0.3f), new Color(0.06f, 0.05f, 0.06f));
             var hull = Art.Lit(new Color(0.58f, 0.57f, 0.62f), new Color(0.2f, 0.17f, 0.18f));
             var plate = Art.Lit(new Color(0.55f, 0.24f, 0.1f), Art.Hdr(Orange, 1.4f));
-            var glow = Art.Unlit(Art.Hdr(Orange, 1.6f));
+            var glow = Art.Unlit(Art.Hdr(Orange, 1.4f));
             var box = Art.Prism(4, 0.7071f, 0.7071f, 45f);
             var hex = Art.Prism(6, 0.5f, 0.5f);
             var taper = Art.Prism(6, 0.4f, 0.5f, 30f);
