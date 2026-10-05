@@ -1,0 +1,11 @@
+{
+    "name": "GunAndParry.Editor",
+    "rootNamespace": "GunAndParry.EditorTools",
+    "references": [
+        "GunAndParry",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Universal.Editor",
+        "Unity.RenderPipelines.Core.Runtime"
+    ],
+    "includePlatforms": ["Editor"]
+}

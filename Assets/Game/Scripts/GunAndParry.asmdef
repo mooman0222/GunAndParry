@@ -1,0 +1,11 @@
+{
+    "name": "GunAndParry",
+    "rootNamespace": "GunAndParry",
+    "references": [
+        "Unity.InputSystem",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Core.Runtime",
+        "UnityEngine.UI"
+    ],
+    "autoReferenced": true
+}
