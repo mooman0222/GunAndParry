@@ -32,8 +32,8 @@ namespace GunAndParry
     /// </summary>
     public sealed class ColossusBrain : BossAI
     {
-        // ArmorMax tuned so a fully parried barrage alone can't break it: a break takes several parried attacks (~25s of good play).
-        public const float ArmorMax = 250f, ArmoredMult = 0.1f, BrokenMult = 2.5f, BreakDuration = 6.5f;
+        // ArmorMax tuned so a fully parried barrage alone can't break it: a break takes several parried attacks (~50s of good play).
+        public const float ArmorMax = 500f, ArmoredMult = 0.1f, BrokenMult = 2.5f, BreakDuration = 6.5f;
         const float SlamRadius = 3.2f, SweepLength = 17f, SweepWidth = 0.7f;
         const float SmashDuration = 0.12f, RecoverDuration = 0.7f;
         /// <summary>Hammer reaches the bottom (-150 -> 0 of the -150 -> +55 smash) this far into SlamRecover.</summary>
