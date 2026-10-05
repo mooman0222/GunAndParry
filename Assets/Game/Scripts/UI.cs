@@ -189,8 +189,8 @@ namespace GunAndParry
             }
             (dashFill, dashKey) = Cooldown(root, new Vector2(70, 40), "DASH", new Color(0.7f, 0.8f, 1f));
 
-            // Boss bar
-            bossRoot = UIKit.Rect(root, "Boss").Place(new Vector2(0.5f, 0), new Vector2(0, 190), new Vector2(1000, 60));
+            // Boss bar (lifted clear of the parry/dash icons and counter pips below it)
+            bossRoot = UIKit.Rect(root, "Boss").Place(new Vector2(0.5f, 0), new Vector2(0, 250), new Vector2(1000, 60));
             bossName = UIKit.Label(bossRoot, "WARDEN", 30, UIKit.Danger, TextAnchor.UpperCenter, FontStyle.Bold);
             bossName.rectTransform.Place(new Vector2(0.5f, 1), Vector2.zero, new Vector2(1000, 34));
             bossFill = UIKit.Bar(bossRoot, "Bar", UIKit.Danger, new Vector2(1000, 22), out var bossBar);
@@ -199,7 +199,7 @@ namespace GunAndParry
             armorFill = UIKit.Bar(bossRoot, "Armor", new Color(1f, 0.55f, 0.2f), new Vector2(1000, 12), out armorRoot);
             armorRoot.Place(new Vector2(0.5f, 0), new Vector2(0, -16), new Vector2(1000, 12));
             armorLabel = UIKit.Label(bossRoot, "", 20, new Color(1f, 0.6f, 0.3f), TextAnchor.UpperCenter, FontStyle.Bold);
-            armorLabel.rectTransform.Place(new Vector2(0.5f, 0), new Vector2(0, -32), new Vector2(1000, 26));
+            armorLabel.rectTransform.Place(new Vector2(0.5f, 0), new Vector2(0, -46), new Vector2(1000, 26));
             bossRoot.gameObject.SetActive(false);
 
             miniHp = UIKit.Bar(root, "MiniHP", new Color(1f, 0.3f, 0.4f), new Vector2(80, 10), out miniHpRoot);
