@@ -135,6 +135,15 @@ namespace GunAndParry
 
         static Mesh PrimitiveMesh(PrimitiveType type)
         {
+            // CreatePrimitive adds colliders internally: touch the collider types
+            // so engine code stripping keeps them, else "Can't add component ... because it doesn't exist".
+            _ = type switch
+            {
+                PrimitiveType.Cube => typeof(BoxCollider),
+                PrimitiveType.Sphere => typeof(SphereCollider),
+                PrimitiveType.Capsule or PrimitiveType.Cylinder => typeof(CapsuleCollider),
+                _ => typeof(MeshCollider),
+            };
             var go = GameObject.CreatePrimitive(type);
             var mesh = go.GetComponent<MeshFilter>().sharedMesh;
             Object.Destroy(go);

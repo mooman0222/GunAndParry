@@ -70,6 +70,9 @@ namespace GunAndParry
             if (I != null) { Destroy(gameObject); return; }
             I = this;
 
+            // WebGL diagnosis: devtools may be unavailable, so draw managed errors on screen.
+            gameObject.AddComponent<BootErrorOverlay>();
+
             SaveSystem.Load();
             Art.Init();
             Sfx.Init(gameObject);
@@ -499,6 +502,31 @@ namespace GunAndParry
                 : UpgradePicker.Roll(Loadout, 1, rng)[0];
             ApplyChoice(choice);
             return choice;
+        }
+    }
+
+    /// <summary>WebGL diagnosis: draws managed errors on screen when devtools are unavailable.</summary>
+    sealed class BootErrorOverlay : MonoBehaviour
+    {
+        static readonly List<string> lines = new();
+
+        void OnEnable() => Application.logMessageReceived += Handle;
+        void OnDisable() => Application.logMessageReceived -= Handle;
+
+        static void Handle(string msg, string stack, LogType type)
+        {
+            if (type != LogType.Exception && type != LogType.Error) return;
+            lines.Add(string.IsNullOrEmpty(stack) ? msg : $"{msg}\n{stack}");
+            while (lines.Count > 4) lines.RemoveAt(0);
+        }
+
+        void OnGUI()
+        {
+            if (lines.Count == 0) return;
+            GUI.color = Color.red;
+            GUILayout.BeginArea(new Rect(10, 10, Screen.width - 20, Screen.height - 20));
+            foreach (var l in lines) GUILayout.Label(l);
+            GUILayout.EndArea();
         }
     }
 }

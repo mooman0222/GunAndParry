@@ -30,19 +30,26 @@ namespace GunAndParry
         {
             var patches = Patches();
             var result = new Rendered[patches.Count];
-            Parallel.For(0, patches.Count, i =>
-            {
-                var p = patches[i];
-                var r = new Rendered { Patch = p, Stereo = new float[p.Variants][] };
-                for (int v = 0; v < p.Variants; v++)
-                {
-                    var s = new Synth(p.Duration, (int)p.Id * 1000 + v * 17 + 1);
-                    p.Render(s, v);
-                    r.Stereo[v] = Dsp.ToStereo(s.Buf, p.Reverb, p.Tail, p.Pan);
-                }
-                result[i] = r;
-            });
+#if UNITY_WEBGL
+            // Single-threaded WASM has no worker threads: Parallel.For can stall or throw, so render sequentially.
+            for (int i = 0; i < patches.Count; i++) RenderOne(patches, result, i);
+#else
+            Parallel.For(0, patches.Count, i => RenderOne(patches, result, i));
+#endif
             return result;
+        }
+
+        static void RenderOne(List<Patch> patches, Rendered[] result, int i)
+        {
+            var p = patches[i];
+            var r = new Rendered { Patch = p, Stereo = new float[p.Variants][] };
+            for (int v = 0; v < p.Variants; v++)
+            {
+                var s = new Synth(p.Duration, (int)p.Id * 1000 + v * 17 + 1);
+                p.Render(s, v);
+                r.Stereo[v] = Dsp.ToStereo(s.Buf, p.Reverb, p.Tail, p.Pan);
+            }
+            result[i] = r;
         }
 
         static readonly List<Patch> list = new();

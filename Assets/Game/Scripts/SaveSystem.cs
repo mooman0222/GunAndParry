@@ -66,8 +66,13 @@ namespace GunAndParry
                 // Write to a temp file first so a crash mid-write never destroys the existing save.
                 string tmp = path + ".tmp";
                 File.WriteAllText(tmp, JsonUtility.ToJson(data, true));
-                if (File.Exists(path)) File.Replace(tmp, path, null);
-                else File.Move(tmp, path);
+                if (!File.Exists(path)) File.Move(tmp, path);
+#if UNITY_WEBGL
+                // File.Replace is unreliable on the WebGL virtual FS: replace via delete + move.
+                else { File.Delete(path); File.Move(tmp, path); }
+#else
+                else File.Replace(tmp, path, null);
+#endif
             }
             catch (Exception e)
             {
@@ -93,7 +98,7 @@ namespace GunAndParry
             Sfx.SetVolumes(d.musicVolume, d.sfxVolume);
             QualitySettings.vSyncCount = d.vsync ? 1 : 0;
             Application.targetFrameRate = d.vsync ? -1 : 240;
-            if (!Application.isEditor)
+            if (!Application.isEditor && Application.platform != RuntimePlatform.WebGLPlayer)
             {
                 var mode = d.fullscreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
                 if (Screen.fullScreenMode != mode)
