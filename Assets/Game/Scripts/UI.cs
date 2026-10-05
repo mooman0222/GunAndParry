@@ -592,7 +592,7 @@ namespace GunAndParry
             UIKit.Column(col, 18, TextAnchor.UpperLeft);
             start = UIKit.Button(col, "START RUN", () => Game.I.StartRun(), new Vector2(420, 78), 36);
             UIKit.Button(col, "ARMORY", ui.ShowArmory, new Vector2(420, 70));
-            if (Debug.isDebugBuild) UIKit.Button(col, "BOSS PRACTICE (DEV)", () => Game.I.StartBossPractice(), new Vector2(420, 70), 28);
+            UIKit.Button(col, "BOSS PRACTICE", () => Game.I.StartBossPractice(), new Vector2(420, 70), 28);
             UIKit.Button(col, "SETTINGS", () => ui.ShowSettings(this), new Vector2(420, 70));
             UIKit.Button(col, "QUIT", Quit, new Vector2(420, 70));
 
