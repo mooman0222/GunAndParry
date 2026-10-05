@@ -260,6 +260,7 @@ namespace GunAndParry
             else if (Time.unscaledTime < slowmoUntil) scale = 0.3f;
             else if (victoryAt > 0) scale = 0.35f;
             else scale = 1f;
+            if (State == GameState.Playing) scale *= SaveSystem.SpeedMultiplier;
             Time.timeScale = scale;
         }
 

@@ -18,6 +18,8 @@ namespace GunAndParry
         public bool vsync = true;
         public bool screenShake = true;
         public bool damageNumbers = true;
+        /// <summary>Game speed: 0 = 1x, 1 = 2x, 2 = 3x.</summary>
+        public int speedMode;
 
         public int runs, wins, totalKills, totalParries;
         public float bestTime;
@@ -33,6 +35,8 @@ namespace GunAndParry
 
         public static void Load() => Data = Load(DefaultPath);
         public static void Save() => Save(Data, DefaultPath);
+
+        public static float SpeedMultiplier => Data.speedMode switch { 1 => 2f, 2 => 3f, _ => 1f };
 
         public static SaveData Load(string path)
         {

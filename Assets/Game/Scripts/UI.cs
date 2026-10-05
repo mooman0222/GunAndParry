@@ -730,6 +730,7 @@ namespace GunAndParry
             ToggleRow(col, "VSYNC", () => d.vsync, v => { d.vsync = v; SaveSystem.ApplySettings(); });
             ToggleRow(col, "SCREEN SHAKE", () => d.screenShake, v => d.screenShake = v);
             ToggleRow(col, "DAMAGE NUMBERS", () => d.damageNumbers, v => d.damageNumbers = v);
+            CycleRow(col, "GAME SPEED", new[] { "1X", "2X", "3X" }, () => d.speedMode, v => d.speedMode = v);
 
             var back = UIKit.Button(Root, "BACK", ui.Back, new Vector2(320, 70));
             ((RectTransform)back.transform).Place(new Vector2(0.5f, 0), new Vector2(0, 60), new Vector2(320, 70));
@@ -768,6 +769,25 @@ namespace GunAndParry
             var t = b.GetComponentInChildren<Text>();
             t.text = on ? "ON" : "OFF";
             t.color = on ? UIKit.Accent : UIKit.Dim;
+        }
+
+        void CycleRow(RectTransform col, string label, string[] options, System.Func<int> get, System.Action<int> set)
+        {
+            var row = Row(col, label);
+            Button b = null;
+            b = UIKit.Button(row, "", () => { set((get() + 1) % options.Length); RefreshCycle(b, options[ClampIndex(get(), options.Length)]); }, new Vector2(220, 60));
+            ((RectTransform)b.transform).Place(new Vector2(1, 0.5f), Vector2.zero, new Vector2(220, 60));
+            UIKit.Label(b.transform, "", 28, UIKit.Text, TextAnchor.MiddleCenter, FontStyle.Bold).rectTransform.Stretch();
+            refreshers.Add(() => RefreshCycle(b, options[ClampIndex(get(), options.Length)]));
+        }
+
+        static int ClampIndex(int i, int length) => Mathf.Clamp(i, 0, length - 1);
+
+        static void RefreshCycle(Button b, string text)
+        {
+            var t = b.GetComponentInChildren<Text>();
+            t.text = text;
+            t.color = UIKit.Accent;
         }
 
         public void Show()
