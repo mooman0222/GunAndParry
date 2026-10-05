@@ -2,6 +2,8 @@
 
 斜め見下ろし 3D の銃×パリィ・サバイバーズライク（ローグライト）。Unity 6000.5 / URP / Input System。
 
+Webで遊ぶ: [Unity Play – Gun & Parry](https://play.unity.com/ja/games/bf303fad-4633-471d-a3ef-3cce0cb4bc18/gun-and-parry)
+
 ## 遊び方
 
 15 分生き延び、最終ボス「COLOSSUS」を倒すとクリア（10:00 に中ボス「WARDEN」）。射撃は照準方向へ自動連射。
